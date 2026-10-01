@@ -1,0 +1,6 @@
+utterance:      test_clean
+n_frames:       1662
+mcu_si_snr:     15.9771 dB
+ref_si_snr:     15.9771 dB
+delta:          +0.0000 dB
+timing:         TIMING:2.715 ms/frame RTF:1.086

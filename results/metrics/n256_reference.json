@@ -1,0 +1,14 @@
+{
+  "n_utterances": 824,
+  "metrics": {
+    "noisy_sisnr": 8.443791274391199,
+    "noisy_pesq": 1.9708953583703457,
+    "noisy_stoi": 0.9210463402283164,
+    "enh_sisnr": 18.083431306676363,
+    "enh_pesq": 2.2641916952086882,
+    "enh_stoi": 0.9247513012713914
+  },
+  "checkpoint": "models/n256_reference.ckpt",
+  "per_utterance_records_available": false,
+  "source_sha256": "81ba77312f6c1ee3e95a899688ad8664e9edfe7092abf00bb3337cb6978596b7"
+}

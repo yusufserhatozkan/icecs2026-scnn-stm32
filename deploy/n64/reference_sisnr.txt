@@ -1,0 +1,4 @@
+utterance:   p232_009
+n_samples:   66522
+n_frames:    1662
+si_snr_ref:  15.9755 dB
