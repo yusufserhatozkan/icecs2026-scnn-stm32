@@ -1,13 +1,13 @@
 """ONNX export utilities for StreamSpikeNet.
 
 Usage (from repo root):
-    # DPSNN scnn_only after training (hparams loaded from ckpt)
+    # Full-chunk export of the packaged N=64 baseline
     python export/export_to_onnx.py \\
-        --ckpt_path egs/voicebank/<scnn_ckpt>.ckpt \\
-        --output_path export/dpsnn_scnn128.onnx
+        --ckpt_path models/n64.ckpt \\
+        --output_path data/full_chunk_n64.onnx
 
-By default a second file <stem>_xcubeai.onnx is also written with all
-X-CUBE-AI compatibility fixes applied in sequence:
+This also writes data/full_chunk_n64_xcubeai.onnx by default, with the
+X-CUBE-AI compatibility transformations applied in sequence:
   1. Inline degenerate If nodes
   2. Remove dead nodes (Equal/Cast orphans after If inlining)
   3. Strip empty-string optional inputs (Pad crash)
@@ -635,7 +635,7 @@ def main() -> None:
     parser.add_argument("--no_xcubeai", action="store_true",
                         help="Skip X-CUBE-AI post-processing pipeline")
     parser.add_argument("--xcubeai_out", default=None,
-                        help="Path for the X-CUBE-AI output (default: <stem>_xcubeai.onnx)")
+                        help="X-CUBE-AI output path; defaults to the raw filename with _xcubeai added before .onnx")
     args = parser.parse_args()
 
     xcubeai_path = args.xcubeai_out or xcubeai_output_path(args.output_path)

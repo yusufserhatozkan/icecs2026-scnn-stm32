@@ -4,11 +4,11 @@
 
 This release accompanies the submitted four-page ICECS 2026 paper, *Spiking Neural Network on Microcontroller for Low-cost Speech Enhancement*. Its SHA-256 is `4c41cb819df0c48c7ae747261e59546332a8322a632d1b865f25d46389f4c929`.
 
-`results/table1.csv`, `results/table2.csv` and `results/deployment.csv` transcribe the paper's numerical values and model identities, with shortened labels. Packaging these records did not involve research training, dataset evaluation or board measurements.
+`results/table1.csv`, `results/table2.csv` and `results/deployment.csv` transcribe the paper's numerical values and model identities, with shortened labels.
 
-The submitted paper is the reference for reporting conference results. Its values and model labels remain in the README and paper tables. Saved logs, checkpoints and graphs retain their own measured values and metadata so that their contents remain inspectable.
+The submitted paper is the reference for reporting conference results. Saved logs, checkpoints and graphs retain their recorded values and metadata. The notes below describe the available evidence for reproduction and do not amend the paper.
 
-The notes below describe the available archive; they do not amend the submitted paper. A difference in an archived file does not by itself establish which implementation produced the submitted result. Missing evidence means a claim cannot be independently checked from this package, not that the claim is false. Passing repository checks verifies file consistency. Research experiments were not rerun; checks inspect saved artifacts and use synthetic software tests.
+Repository checks inspect saved artifacts and use synthetic software tests. The research experiments were not rerun.
 
 | Paper location | Repository evidence | Available archive |
 |---|---|---|

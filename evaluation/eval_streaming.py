@@ -297,7 +297,7 @@ def main() -> None:
     parser.add_argument("--ckpt_path", required=True)
     parser.add_argument("--hdf5_path", required=True)
     parser.add_argument("--output_path", required=True,
-                        help="New text result path; full records saved beside it as <path>.json")
+                        help="New text result file; full records use the same filename with an added .json suffix")
     args = parser.parse_args()
 
     _require_new_results(args.output_path)

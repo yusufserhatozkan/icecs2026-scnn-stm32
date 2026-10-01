@@ -1,15 +1,13 @@
 """
-Replace degenerate ONNX If nodes with their branch body directly.
+Replace ONNX If nodes with their then_branch body.
 
-X-CUBE-AI does not support the ONNX If operator. Inspection of the exported
-DPSNN graph shows 798 If nodes where both then_branch and else_branch execute
-the identical Squeeze operation — the condition is never actually branched on.
-This script inlines the then_branch body into the main graph and removes the
-If node, producing a semantically identical graph that X-CUBE-AI can accept.
+Use this helper only when both branches have been checked to compute the same
+outputs. It inlines the then_branch into the main graph without checking
+branch equivalence.
 
 Usage:
-    python tools/inline_if_nodes.py --input C:/ai/dpsnn_int8_sorted.onnx \
-                                     --output C:/ai/dpsnn_int8_final.onnx
+    python tools/inline_if_nodes.py --input data/full_chunk_n64_sorted.onnx \
+                                     --output data/full_chunk_n64_inlined.onnx
 """
 
 import argparse
@@ -42,7 +40,7 @@ def inline_if_nodes(model: onnx.ModelProto) -> onnx.ModelProto:
             new_nodes.append(node)
             continue
 
-        # Get then_branch (both branches are identical, use then)
+        # Branch equivalence must be checked before calling this helper.
         then_branch = None
         for attr in node.attribute:
             if attr.name == 'then_branch':

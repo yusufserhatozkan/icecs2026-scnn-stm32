@@ -31,17 +31,12 @@ The archived test HDF5 SHA-256 is `c3507125db82884509a2820af1a0296c77c007e612b7b
 
 The baseline configuration uses seed 2020, 100 epochs, batch size 64, Adam with learning rate 0.01, bf16 mixed precision and gradient clipping at 1.0. Checkpoint selection minimizes validation loss. The test set is excluded from fitting and checkpoint selection. The archived epoch logs and selection metadata are in [results/training](../results/training/summary.json).
 
-Training requires the SHA-256 of the split report produced by your preparation command. Print it with:
+Training requires the SHA-256 of the split report produced by your preparation command. The hash includes your local file inventory; do not substitute the hash of the archived report or the test HDF5. In PowerShell, compute it and run the baseline commands:
 
-```text
-python -c "from pathlib import Path; import hashlib; print(hashlib.sha256(Path('data/voicebank/split_audit.json').read_bytes()).hexdigest())"
-```
-
-Replace `YOUR_SPLIT_AUDIT_SHA256` below with that value. The hash includes your local file inventory; do not substitute the hash of the archived report or the test HDF5.
-
-```text
-python -m egs.voicebank.vctk_trainer --config conference.yaml -L 80 --stride 40 -N 128 -B 128 -H 128 -X 1 --scnn_only --device_num 1 --skip_test_after_fit --split_audit_sha256 YOUR_SPLIT_AUDIT_SHA256 --run_dir data/train_n128
-python -m egs.voicebank.vctk_trainer --config conference.yaml -L 80 --stride 40 -N 64 -B 64 -H 64 -X 1 --scnn_only --device_num 1 --skip_test_after_fit --split_audit_sha256 YOUR_SPLIT_AUDIT_SHA256 --run_dir data/train_n64
+```powershell
+$splitAuditHash = (Get-FileHash -LiteralPath data/voicebank/split_audit.json -Algorithm SHA256).Hash.ToLowerInvariant()
+python -m egs.voicebank.vctk_trainer --config conference.yaml -L 80 --stride 40 -N 128 -B 128 -H 128 -X 1 --scnn_only --device_num 1 --skip_test_after_fit --split_audit_sha256 $splitAuditHash --run_dir data/train_n128
+python -m egs.voicebank.vctk_trainer --config conference.yaml -L 80 --stride 40 -N 64 -B 64 -H 64 -X 1 --scnn_only --device_num 1 --skip_test_after_fit --split_audit_sha256 $splitAuditHash --run_dir data/train_n64
 ```
 
 The released N=128/N=64 checkpoints allow inference without retraining. N=256 is an archived upstream reference checkpoint, not a model trained with these two commands. Its original inference entry point is not included; see [model notes](../models/README.md).

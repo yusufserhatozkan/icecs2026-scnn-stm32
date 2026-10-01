@@ -1,11 +1,10 @@
 """
 Topologically sort an ONNX graph's nodes.
 
-X-CUBE-AI requires nodes to appear in topological order. Our QDQ insertion
-script appends new nodes at the end without resorting, which breaks this.
+Order nodes so that each input is available before the node that consumes it.
 
 Usage:
-    python tools/sort_onnx_graph.py --input C:/ai/dpsnn_int8.onnx --output C:/ai/dpsnn_int8_sorted.onnx
+    python tools/sort_onnx_graph.py --input data/full_chunk_n64.onnx --output data/full_chunk_n64_sorted.onnx
 """
 
 import argparse

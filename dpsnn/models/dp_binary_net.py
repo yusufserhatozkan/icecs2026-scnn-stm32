@@ -217,7 +217,6 @@ class StreamSpikeNet(pl.LightningModule):
         inputs, targets = batch
         file_id, noisy_x, audio_len = inputs  # (b, seq)
 
-        # Todo: add context x as padded 0
         context_wins = [None] * self.X
         enhanced_steps = []
         encoder_event_counts, proj_event_counts, readout_event_counts = [], [], []

@@ -1,14 +1,14 @@
 """
 Fix symbolic/dynamic dimensions in an ONNX model for X-CUBE-AI.
 
-X-CUBE-AI requires fully static shapes. After ONNX export + QDQ insertion,
-some intermediate tensors retain symbolic dimension names (e.g. 'H', 'batch_size').
+X-CUBE-AI requires fully static shapes. Exported intermediate tensors can
+retain symbolic dimension names (e.g. 'H', 'batch_size').
 This script sets the input to a concrete shape and runs ONNX shape inference
 to propagate concrete integer dimensions throughout the graph.
 
 Usage:
-    python tools/fix_shapes.py --input C:/ai/dpsnn_int8_final.onnx \
-                                --output C:/ai/dpsnn_int8_static.onnx \
+    python tools/fix_shapes.py --input data/full_chunk_n64.onnx \
+                                --output data/full_chunk_n64_static.onnx \
                                 --batch 1 --samples 16160
 """
 

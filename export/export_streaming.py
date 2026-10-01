@@ -265,7 +265,7 @@ def main() -> None:
     parser.add_argument("--output_path", required=True,
                         help="Path for the raw streaming ONNX")
     parser.add_argument("--xcubeai_out", default=None,
-                        help="Path for the X-CUBE-AI output (default: <stem>_xcubeai.onnx)")
+                        help="X-CUBE-AI output path; defaults to the raw filename with _xcubeai added before .onnx")
     args = parser.parse_args()
 
     xcubeai_path = args.xcubeai_out or xcubeai_output_path(args.output_path)

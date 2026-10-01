@@ -7,8 +7,8 @@ collects the actual shape of every intermediate tensor, and writes
 those concrete integers back into the model's value_info entries.
 
 Usage:
-    python tools/bake_shapes.py --input C:/ai/dpsnn_int8_static.onnx \
-                                 --output C:/ai/dpsnn_int8_baked.onnx
+    python tools/bake_shapes.py --input data/full_chunk_n64_static.onnx \
+                                 --output data/full_chunk_n64_baked.onnx
 """
 
 import argparse
@@ -111,7 +111,7 @@ def main():
     model = onnx.load(args.input)
 
     print(f"Running ORT forward pass (input shape: ({args.batch}, {args.samples})) ...")
-    print("  This may take 2-5 minutes for 399 unrolled time steps ...")
+    print("  Collecting intermediate tensor shapes ...")
     shape_map = collect_shapes(model, (args.batch, args.samples))
     print(f"  Collected shapes for {len(shape_map)} tensors")
 
