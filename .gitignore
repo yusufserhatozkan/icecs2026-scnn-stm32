@@ -1,6 +1,29 @@
 # Track only the files selected for the conference release.
 *
-!*/
+
+# Only these directories are eligible for tracked files.
+!/deploy/
+!/deploy/n64/
+!/docs/
+!/dpsnn/
+!/dpsnn/data/
+!/dpsnn/layers/
+!/dpsnn/models/
+!/egs/
+!/egs/voicebank/
+!/evaluation/
+!/export/
+!/figures/
+!/models/
+!/results/
+!/results/compiler/
+!/results/metrics/
+!/results/per_utterance/
+!/results/training/
+!/tests/
+!/tools/
+
+# Released files.
 !/.gitattributes
 !/.gitignore
 !/CITATION.cff
