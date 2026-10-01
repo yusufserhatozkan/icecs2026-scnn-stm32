@@ -24,13 +24,13 @@ The paper deploys a time-domain spiking convolutional network on the STM32U585. 
 
 Latency was reported for the B-U585I-IOT02A board at 160 MHz, excluding UART transmission. The frame budget is 2.5 ms. Both baselines exceed that budget.
 
-The tables above reproduce the submitted paper. They are not a claim that every published statement can be independently reproduced from this archive. The [paper-to-repository comparison](docs/RESULTS.md) identifies matching records, discrepancies and missing evidence, including the ONNX/C-node distinction and the unavailable original firmware.
+The submitted conference paper is the reference for the reported results and model labels in this repository. The tables above preserve its values. [Reported results and archive notes](docs/RESULTS.md) describe the supporting files, their compatibility and the available evidence for reproduction. Archive observations do not replace the paper's reported results.
 
 ## Repository contents
 
 - `dpsnn/`: network layers, model and data preparation code.
 - `egs/voicebank/`: training entry point and baseline configuration.
-- `evaluation/`: conference evaluation procedure.
+- `evaluation/`: archived baseline quality-evaluation script.
 - `export/`: streaming ONNX export and X-CUBE-AI conversion.
 - `models/`: N=128 and N=64 checkpoints and ONNX files, plus the upstream N=256 reference checkpoint.
 - `results/`: paper tables, baseline per-utterance scores, training records and compiler reports.

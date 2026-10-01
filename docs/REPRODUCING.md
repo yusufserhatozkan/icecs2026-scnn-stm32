@@ -75,7 +75,7 @@ The board is the B-U585I-IOT02A with STM32U585 at 160 MHz. The streaming graph c
 
 `tools/wav_to_c_array.py` prepares an embedded audio fixture and an ONNX reference. `tools/mcu_audio_receiver.py` receives the corresponding UART output at 115,200 baud by default. Their command-line help describes the expected files and serial format. UART transfer is excluded from the paper's DWT timing. Use fresh output directories under `data/`; these legacy utilities can overwrite files in a supplied output directory.
 
-The board fixture preparation peak-normalizes the noisy input and streams the full clip with states carried between frames. Table I's evaluator instead uses one-second chunks and peak-normalizes the enhanced utterance. The two procedures should not be treated as the same test. The saved WAVs are 16-bit listening/plotting copies; only `test_enhanced_ref.bin` retains a raw float32 reference. The raw UART capture is unavailable.
+The board fixture preparation peak-normalizes the noisy input and streams the full clip with states carried between frames. The archived quality evaluator instead uses one-second chunks and peak-normalizes the enhanced utterance. The two procedures should not be treated as the same test. The saved WAVs are 16-bit listening/plotting copies; only `test_enhanced_ref.bin` retains a raw float32 reference. The raw UART capture is unavailable.
 
 `export/validate_onnx.py` is a full-chunk, single-input validator used by the export software tests. It does not accept the released five-input streaming graphs. `tools/verify_artifacts.py --models` checks their structure and checkpoint identity without running inference.
 
@@ -88,4 +88,4 @@ python -c "from pathlib import Path; Path('data').mkdir(exist_ok=True)"
 python -m pytest tests -q --basetemp data/pytest_check
 ```
 
-Use a new disposable directory for `--basetemp`; pytest manages its contents. These tests check software behavior and do not generate paper results. The synthetic export tests exercise newly exported graphs, not the archived firmware or the full VoiceBank test set. Passing them does not resolve the discrepancies listed in [the paper comparison](RESULTS.md).
+Use a new disposable directory for `--basetemp`; pytest manages its contents. These tests check software behavior and do not generate paper results. The synthetic export tests exercise newly exported graphs, not the archived firmware or the full VoiceBank test set. See [reported results and archive notes](RESULTS.md) for the scope of the available evidence.

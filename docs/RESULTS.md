@@ -1,4 +1,4 @@
-# Paper and repository comparison
+# Reported results and archive notes
 
 ## Scope
 
@@ -6,9 +6,11 @@ This release accompanies the submitted four-page ICECS 2026 paper, *Spiking Neur
 
 `results/table1.csv`, `results/table2.csv` and `results/deployment.csv` transcribe the paper's numerical values and model identities, with shortened labels. Packaging these records did not involve research training, dataset evaluation or board measurements.
 
-Passing the repository checks verifies file consistency, not every scientific claim. Some entries match retained measurements; others are transcriptions with missing primary evidence. Research experiments were not rerun for this comparison; checks inspect saved artifacts and use synthetic software tests.
+The submitted paper is the reference for reporting conference results. Its values and model labels remain in the README and paper tables. Saved logs, checkpoints and graphs retain their own measured values and metadata so that their contents remain inspectable.
 
-| Paper location | Repository evidence | Finding |
+The notes below describe the available archive; they do not amend the submitted paper. A difference in an archived file does not by itself establish which implementation produced the submitted result. Missing evidence means a claim cannot be independently checked from this package, not that the claim is false. Passing repository checks verifies file consistency. Research experiments were not rerun; checks inspect saved artifacts and use synthetic software tests.
+
+| Paper location | Repository evidence | Available archive |
 |---|---|---|
 | Table I: four quality rows | [Table I](../results/table1.csv), [metric summaries](../results/metrics/n128.json), [per-utterance records](../results/per_utterance/n128.csv) | All displayed numbers match. Both baseline means round to their table entries. |
 | III-B: ONNX Runtime evaluation | [Evaluator](../evaluation/eval_streaming.py), baseline JSON protocol fields | Retained 824-utterance records identify PyTorch streaming, not ONNX Runtime. Rounded agreement does not establish the claimed backend. |
@@ -61,7 +63,7 @@ The current export code preserves equality in `GreaterOrEqual` comparisons. The 
 | Compiled activations in ST report | 47,072 B | 23,264 B | 45.97/22.72 KiB, consistent with 46/23 when rounded in KiB. |
 | Paper analysis wall-time | 16 s | 16 s | No elapsed-time evidence in the retained compiler reports. |
 
-The statement that halving channel width roughly halves both weights and activations is not supported for weights: the reports show a 3.05-fold weight reduction and a 2.02-fold activation reduction. Both footprints fit the capacities stated in the paper, but compiler activation storage is not a measurement of complete firmware SRAM usage.
+For reporting the conference footprint, use Table II's 280/91 KB weights and 46/23 KB activations. The prose description "roughly halves" is approximate: the paper's own weight entries differ by about 3.08-fold, while the compiler's exact byte counts differ by 3.05-fold. Activations differ by about twofold. Both footprints fit the capacities stated in the paper, but compiler activation storage is not a measurement of complete firmware SRAM usage.
 
 The latency arithmetic checks out: 40 samples at 16 kHz gives a 2.5 ms hop; 6.145/2.5 rounds to 2.46, 2.715/2.5 is 1.086, and 6.145/2.715 rounds to a 2.26-fold speed-up. Both reported baselines exceed the hop budget. Clock configuration, DWT timing, UART exclusion and pointer-swapped state buffers remain paper descriptions without the original firmware to inspect.
 
