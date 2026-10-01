@@ -2,19 +2,19 @@
 
 Receives enhanced audio streamed from the STM32U585 over UART:
     AUDIO_START\\r\\n
-    <399 * 40 * 4 bytes of float32 audio>
+    <n_frames * 40 * 4 bytes of float32 audio>
     TIMING:<ms/frame> ms/frame RTF:<rtf>\\r\\n
     AUDIO_END\\r\\n
 
 Then computes SI-SNR vs the clean reference and compares to the Python
-ONNX reference SI-SNR from deploy/reference_sisnr.txt.
+ONNX reference waveform supplied with --ref_bin.
 
 Usage (dpsnn env):
     python tools/mcu_audio_receiver.py \\
         --port COM3 \\
-        --clean data/clean_testset_wav_16k/p232_006.wav \\
-        --ref_bin deploy/test_enhanced_ref.bin \\
-        --out deploy/mcu_enhanced.wav
+        --clean deploy/n64/test_clean.wav \\
+        --ref_bin deploy/n64/test_enhanced_ref.bin \\
+        --out data/board_capture/mcu_enhanced.wav
 """
 from __future__ import annotations
 
@@ -26,7 +26,6 @@ import time
 import wave
 
 import numpy as np
-import serial
 import soundfile as sf
 
 def load_n_frames(ref_bin: str) -> int:
@@ -68,11 +67,12 @@ def main() -> None:
                         help="Serial port (e.g. COM3 or /dev/ttyACM0)")
     parser.add_argument("--baud",    type=int, default=115200)
     parser.add_argument("--clean",   required=True,
-                        help="Clean reference WAV (p232_006)")
+                        help="Clean reference WAV paired with the embedded utterance")
     parser.add_argument("--ref_bin", required=True,
                         help="Python ONNX reference enhanced binary (.bin)")
-    parser.add_argument("--out",     default="deploy/mcu_enhanced.wav")
+    parser.add_argument("--out",     default="data/board_capture/mcu_enhanced.wav")
     args = parser.parse_args()
+    import serial
 
     N_FRAMES = load_n_frames(args.ref_bin)
     N_FLOATS = N_FRAMES * 40

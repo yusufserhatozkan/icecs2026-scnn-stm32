@@ -5,9 +5,9 @@ each one-second chunk and reset between chunks. This is not an MCU measurement.
 
 Usage:
     python evaluation/eval_streaming.py \\
-        --ckpt_path egs/voicebank/lightning_logs/version_2/checkpoints/<best>.ckpt \\
-        --hdf5_path data/results/save/test.hdf5 \\
-        --output_path <unique_result_path>.txt
+        --ckpt_path models/n64.ckpt \\
+        --hdf5_path data/voicebank/save/test.hdf5 \\
+        --output_path data/eval_n64/metrics.txt
 """
 from __future__ import annotations
 
@@ -181,7 +181,7 @@ def run_streaming_chunk(wrapper: StreamingWrapper, chunk: np.ndarray) -> np.ndar
 
 
 def _build_chunks(audio: np.ndarray, input_dim: int, output_size: int) -> np.ndarray:
-    """Identical to eval_onnx._build_chunks — splits variable-length utterances."""
+    """Split utterances into padded chunks with an initial context prefix."""
     context_size = input_dim - output_size
     remainder = len(audio) % output_size
     if remainder:

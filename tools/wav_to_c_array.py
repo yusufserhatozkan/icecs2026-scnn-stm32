@@ -1,16 +1,16 @@
 """Prepare an audio fixture for the STM32U585.
 
-1. Load noisy/clean WAV pair, normalize, pad/truncate to 16000 samples.
+1. Load a 16 kHz WAV pair and peak-normalize the full noisy utterance.
 2. Write test_utterance.h + test_utterance.c for embedding in STM32 Flash.
 3. Run Python ONNX streaming inference → reference enhanced WAV + SI-SNR.
 
 Usage (from repo root, dpsnn env):
     python tools/wav_to_c_array.py \\
-        --noisy data/noisy_testset_wav_16k/p232_006.wav \\
-        --clean  data/clean_testset_wav_16k/p232_006.wav  \\
-        --onnx   export/dpsnn_streaming_xcubeai.onnx \\
-        --out_c  ../Stm_deployment/X-CUBE-AI/App \\
-        --out_wav deploy/
+        --noisy data/voicebank/audio_16k/noisy_testset_wav_16k/p232_009.wav \\
+        --clean data/voicebank/audio_16k/clean_testset_wav_16k/p232_009.wav \\
+        --onnx models/dpsnn_n64_streaming_xcubeai.onnx \\
+        --out_c data/board_n64/c \\
+        --out_wav data/board_n64/audio
 """
 from __future__ import annotations
 
@@ -152,7 +152,7 @@ def main() -> None:
     parser.add_argument("--onnx",    required=True)
     parser.add_argument("--out_c",   required=True,
                         help="Directory to write test_utterance.{h,c}")
-    parser.add_argument("--out_wav", default="deploy",
+    parser.add_argument("--out_wav", default="data/board_reference",
                         help="Directory to write reference WAVs")
     args = parser.parse_args()
 
@@ -164,7 +164,7 @@ def main() -> None:
     noisy_raw = noisy_raw.squeeze()
     clean_raw = clean_raw.squeeze()
 
-    # Peak-normalize noisy (same as training/eval pipeline)
+    # Peak-normalize the noisy board fixture before streaming inference.
     peak = np.max(np.abs(noisy_raw)) + 1e-8
     noisy = (noisy_raw / peak).astype(np.float32)
     clean = clean_raw.astype(np.float32)

@@ -12,6 +12,7 @@ Install the matching PyTorch packages for your platform before installing this r
 python -m pip install -r requirements.txt
 python -m pip install --no-deps -e .
 python tools/verify_artifacts.py
+python tools/verify_artifacts.py --models
 ```
 
 ## Dataset
@@ -28,11 +29,19 @@ The archived test HDF5 SHA-256 is `c3507125db82884509a2820af1a0296c77c007e612b7b
 
 ## Training
 
-The baseline configuration uses seed 2020, 100 epochs, batch size 64, Adam with learning rate 0.01, bf16 mixed precision and gradient clipping at 1.0. Checkpoint selection minimizes validation loss. The test set is excluded from fitting and checkpoint selection.
+The baseline configuration uses seed 2020, 100 epochs, batch size 64, Adam with learning rate 0.01, bf16 mixed precision and gradient clipping at 1.0. Checkpoint selection minimizes validation loss. The test set is excluded from fitting and checkpoint selection. The archived epoch logs and selection metadata are in [results/training](../results/training/summary.json).
+
+Training requires the SHA-256 of the split report produced by your preparation command. Print it with:
 
 ```text
-python -m egs.voicebank.vctk_trainer --config conference.yaml -L 80 --stride 40 -N 128 -B 128 -H 128 -X 1 --scnn_only --device_num 1 --skip_test_after_fit --run_dir data/train_n128
-python -m egs.voicebank.vctk_trainer --config conference.yaml -L 80 --stride 40 -N 64 -B 64 -H 64 -X 1 --scnn_only --device_num 1 --skip_test_after_fit --run_dir data/train_n64
+python -c "from pathlib import Path; import hashlib; print(hashlib.sha256(Path('data/voicebank/split_audit.json').read_bytes()).hexdigest())"
+```
+
+Replace `YOUR_SPLIT_AUDIT_SHA256` below with that value. The hash includes your local file inventory; do not substitute the hash of the archived report or the test HDF5.
+
+```text
+python -m egs.voicebank.vctk_trainer --config conference.yaml -L 80 --stride 40 -N 128 -B 128 -H 128 -X 1 --scnn_only --device_num 1 --skip_test_after_fit --split_audit_sha256 YOUR_SPLIT_AUDIT_SHA256 --run_dir data/train_n128
+python -m egs.voicebank.vctk_trainer --config conference.yaml -L 80 --stride 40 -N 64 -B 64 -H 64 -X 1 --scnn_only --device_num 1 --skip_test_after_fit --split_audit_sha256 YOUR_SPLIT_AUDIT_SHA256 --run_dir data/train_n64
 ```
 
 The released N=128/N=64 checkpoints allow inference without retraining. N=256 is an archived upstream reference checkpoint, not a model trained with these two commands. Its original inference entry point is not included; see [model notes](../models/README.md).
@@ -64,7 +73,11 @@ stedgeai analyze --model models/dpsnn_n64_streaming_xcubeai.onnx --target stm32u
 
 The board is the B-U585I-IOT02A with STM32U585 at 160 MHz. The streaming graph consumes 80 audio samples and emits 40 enhanced samples per call. All four output states must be retained for the next call. The paper describes externally managed ping-pong state buffers. The original firmware project is unavailable in this release, so an exact board-timing reproduction requires that project.
 
-`tools/wav_to_c_array.py` prepares an embedded audio fixture and an ONNX reference. `tools/mcu_audio_receiver.py` receives the corresponding UART output. Their command-line help describes the expected files and serial format. UART transfer is excluded from the paper's DWT timing.
+`tools/wav_to_c_array.py` prepares an embedded audio fixture and an ONNX reference. `tools/mcu_audio_receiver.py` receives the corresponding UART output at 115,200 baud by default. Their command-line help describes the expected files and serial format. UART transfer is excluded from the paper's DWT timing. Use fresh output directories under `data/`; these legacy utilities can overwrite files in a supplied output directory.
+
+The board fixture preparation peak-normalizes the noisy input and streams the full clip with states carried between frames. Table I's evaluator instead uses one-second chunks and peak-normalizes the enhanced utterance. The two procedures should not be treated as the same test. The saved WAVs are 16-bit listening/plotting copies; only `test_enhanced_ref.bin` retains a raw float32 reference. The raw UART capture is unavailable.
+
+`export/validate_onnx.py` is a full-chunk, single-input validator used by the export software tests. It does not accept the released five-input streaming graphs. `tools/verify_artifacts.py --models` checks their structure and checkpoint identity without running inference.
 
 ## Software checks
 
@@ -75,4 +88,4 @@ python -c "from pathlib import Path; Path('data').mkdir(exist_ok=True)"
 python -m pytest tests -q --basetemp data/pytest_check
 ```
 
-Use a new disposable directory for `--basetemp`; pytest manages its contents. These tests check software behavior and do not generate paper results.
+Use a new disposable directory for `--basetemp`; pytest manages its contents. These tests check software behavior and do not generate paper results. The synthetic export tests exercise newly exported graphs, not the archived firmware or the full VoiceBank test set. Passing them does not resolve the discrepancies listed in [the paper comparison](RESULTS.md).

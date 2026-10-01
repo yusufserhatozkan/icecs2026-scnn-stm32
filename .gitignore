@@ -64,8 +64,12 @@
 !/results/per_utterance/n64.csv
 !/results/table1.csv
 !/results/table2.csv
+!/results/training/n128_progress.jsonl
+!/results/training/n64_progress.jsonl
+!/results/training/summary.json
 !/setup.py
 !/tests/__init__.py
+!/tests/test_artifacts.py
 !/tests/test_eval_streaming.py
 !/tests/test_export.py
 !/tests/test_export_postprocess.py

@@ -24,7 +24,7 @@ The paper deploys a time-domain spiking convolutional network on the STM32U585. 
 
 Latency was reported for the B-U585I-IOT02A board at 160 MHz, excluding UART transmission. The frame budget is 2.5 ms. Both baselines exceed that budget.
 
-The tables above reproduce the submitted paper. [Results and artifact notes](docs/RESULTS.md) distinguish the reported values from the available evaluation records and describe the limits of hardware reproduction.
+The tables above reproduce the submitted paper. They are not a claim that every published statement can be independently reproduced from this archive. The [paper-to-repository comparison](docs/RESULTS.md) identifies matching records, discrepancies and missing evidence, including the ONNX/C-node distinction and the unavailable original firmware.
 
 ## Repository contents
 
@@ -33,7 +33,7 @@ The tables above reproduce the submitted paper. [Results and artifact notes](doc
 - `evaluation/`: conference evaluation procedure.
 - `export/`: streaming ONNX export and X-CUBE-AI conversion.
 - `models/`: N=128 and N=64 checkpoints and ONNX files, plus the upstream N=256 reference checkpoint.
-- `results/`: paper tables, baseline per-utterance scores and compiler reports.
+- `results/`: paper tables, baseline per-utterance scores, training records and compiler reports.
 - `deploy/n64/`: saved test-utterance audio, reference output and board summary.
 - `figures/`: the paper's pipeline and waveform figures.
 - `tests/`: software checks for data splits, checkpoint selection and export.
@@ -46,6 +46,7 @@ Use Python 3.11 and PyTorch 2.1.0. Install the matching PyTorch, torchvision and
 python -m pip install -r requirements.txt
 python -m pip install --no-deps -e .
 python tools/verify_artifacts.py
+python tools/verify_artifacts.py --models
 ```
 
 See [reproduction instructions](docs/REPRODUCING.md) for dataset preparation, training, evaluation and ONNX export. The dataset and STM32 toolchain must be obtained separately. The original board firmware project is not included.

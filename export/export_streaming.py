@@ -1,13 +1,12 @@
 """Export StreamSpikeNet as a single-frame streaming ONNX.
 
-The trained model processes a full 1-second utterance (399 frames) in one
-shot. On STM32U585 that produces 1.37 MB activations — over the 786 KB SRAM
-budget. This exporter wraps it as a single-frame inference step:
+This exporter wraps the convolution-decoder model as one inference step:
 
     (frame[t], state[t]) -> (enhanced_samples[t], state[t+1])
 
-The MCU calls this 399 times per utterance, feeding state_out as state_in for
-the next call. Peak activations drop to ~23 KB — well inside budget.
+The caller feeds state_out back as state_in for the next frame. The paper's
+4.16-second board fixture uses 1,662 calls. Chunked host evaluation includes
+four context frames followed by 399 output frames and a final overlap-add tail.
 
 State tensors
 -------------
@@ -25,8 +24,8 @@ OLA tail. The caller is responsible for this chunk-boundary policy.
 Usage
 -----
 python export/export_streaming.py \\
-    --ckpt_path egs/voicebank/lightning_logs/version_2/checkpoints/<best>.ckpt \\
-    --output_path export/dpsnn_streaming.onnx
+    --ckpt_path models/n64.ckpt \\
+    --output_path data/export_n64/streaming.onnx
 """
 from __future__ import annotations
 

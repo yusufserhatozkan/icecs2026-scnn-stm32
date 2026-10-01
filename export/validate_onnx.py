@@ -1,9 +1,11 @@
-"""Numerically validate an ONNX model against its PyTorch checkpoint.
+"""Validate a full-chunk, single-input ONNX export against its checkpoint.
+
+This helper does not accept the released five-input streaming graphs.
 
 Usage (from repo root):
     python export/validate_onnx.py \\
-        --ckpt_path egs/voicebank/epoch=478-val_loss=81.5449-val_sisnr=-18.4556.ckpt \\
-        --onnx_path export/dpsnn_pretrained.onnx
+        --ckpt_path models/n64.ckpt \\
+        --onnx_path data/full_chunk_n64.onnx
 """
 from __future__ import annotations
 

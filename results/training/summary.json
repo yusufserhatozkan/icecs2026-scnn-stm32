@@ -1,0 +1,82 @@
+{
+  "models": [
+    {
+      "model": "n128",
+      "checkpoint": "models/n128.ckpt",
+      "epochs_completed": 100,
+      "selected_epoch_zero_based": 87,
+      "selected_validation_loss": 87.19273376464844,
+      "selection": "minimum val_loss",
+      "source_checkpoint_sha256": "78aa8637f294d8225efa7a1b45d7072d9f11af70982077f0b12d1162512367cc",
+      "progress": "results/training/n128_progress.jsonl",
+      "source_progress_sha256": "59de0c0c2c80a3995aa3439c5217c511e3638e0f26505b0f2cc7ab61bfd892d0",
+      "source_selection_sha256": "129f3dc064e4831394789a420352477d82e56eddbdfbc56377dc219d85f0a175",
+      "progress_sha256": "8a18b7f99cfcde84aab0140a564a9e567f7ee9322d3ea5d9cbdd555c2537eafe"
+    },
+    {
+      "model": "n64",
+      "checkpoint": "models/n64.ckpt",
+      "epochs_completed": 100,
+      "selected_epoch_zero_based": 92,
+      "selected_validation_loss": 87.96025085449219,
+      "selection": "minimum val_loss",
+      "source_checkpoint_sha256": "6375d7750d4eaf826430ed6684e887ae37d051bbde7cf76efee64679e8cf91cf",
+      "progress": "results/training/n64_progress.jsonl",
+      "source_progress_sha256": "3102dcdada80304ab041bfc797020f463fe8b5005f4c141bc0232e61b50025c6",
+      "source_selection_sha256": "9df095257b1097ff67caf6a6ef8c359ecedc5a8a37100f01e46e70cccb38acef",
+      "progress_sha256": "b8f785f5a3329b8802b70bce74f9f5d9b503a54bccfa1d5740a9329cfa51e34e"
+    }
+  ],
+  "loss": "100 + negative SI-SDR + 0.001 * MSE",
+  "splits": {
+    "train": {
+      "pairs": 10802,
+      "speakers": [
+        "p227",
+        "p228",
+        "p230",
+        "p231",
+        "p233",
+        "p236",
+        "p239",
+        "p243",
+        "p244",
+        "p250",
+        "p254",
+        "p256",
+        "p258",
+        "p259",
+        "p267",
+        "p268",
+        "p269",
+        "p270",
+        "p273",
+        "p274",
+        "p276",
+        "p277",
+        "p278",
+        "p279",
+        "p282",
+        "p286"
+      ],
+      "cache_sha256": "32b1b6a3928836af8203de45d2f977670c65256e3f7d3c5c90afdf35963d126a"
+    },
+    "valid": {
+      "pairs": 770,
+      "speakers": [
+        "p226",
+        "p287"
+      ],
+      "cache_sha256": "0c0d6ad060f3bb8ccf49387c4b8174bf9fcc9443c145d49a78a517b7a1be8edb"
+    },
+    "test": {
+      "pairs": 824,
+      "speakers": [
+        "p232",
+        "p257"
+      ],
+      "cache_sha256": "c3507125db82884509a2820af1a0296c77c007e612b7bad24327900944ce6092"
+    }
+  },
+  "source_split_audit_sha256": "fd642113849e3e56956d8961048b4c42ec91404c7eae984419a1eea7e9dea53a"
+}
