@@ -1,0 +1,24 @@
+cff-version: 1.2.0
+message: "Please cite the ICECS 2026 paper when using this repository."
+title: "Spiking Neural Network on Microcontroller for Low-cost Speech Enhancement"
+type: software
+authors:
+  - family-names: "Özkan"
+    given-names: "Yusuf Serhat"
+  - family-names: "Sun"
+    given-names: "Tao"
+  - family-names: "Tang"
+    given-names: "Guangzhi"
+repository-code: "https://github.com/yusufserhatozkan/icecs2026-scnn-stm32"
+preferred-citation:
+  type: conference-paper
+  title: "Spiking Neural Network on Microcontroller for Low-cost Speech Enhancement"
+  authors:
+    - family-names: "Özkan"
+      given-names: "Yusuf Serhat"
+    - family-names: "Sun"
+      given-names: "Tao"
+    - family-names: "Tang"
+      given-names: "Guangzhi"
+  collection-title: "2026 IEEE 33rd International Conference on Electronics, Circuits and Systems (ICECS)"
+  year: 2026

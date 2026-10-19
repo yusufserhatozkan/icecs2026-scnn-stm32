@@ -1,0 +1,46 @@
+# VoiceBank-DEMAND training settings for the conference baselines.
+name: icecs2026
+data_folder: data/voicebank
+output_folder: ${data_folder}
+save_folder: ${data_folder}/save
+split_audit_report: ${data_folder}/split_audit.json
+use_tensorboard: false
+csv_train: ${save_folder}/train.csv
+csv_valid: ${save_folder}/valid.csv
+csv_test: ${save_folder}/test.csv
+hdf5_train: ${save_folder}/train.hdf5
+hdf5_valid: ${save_folder}/valid.hdf5
+hdf5_test: ${save_folder}/test.hdf5
+basic_loss: MSE
+number_of_epochs: 100
+batch_size: 64
+lr: 0.01
+# Legacy top-level field is inactive; Adam's actual weight_decay is zero.
+weight_decay: 0.001
+sample_rate: 16000
+frame_dur: 1.0
+context_dur: 0.01
+delay_dur: 0.0
+max_frames: 5
+num_workers: 0
+trainer:
+  max_epochs: 100
+  num_nodes: 1
+  strategy: auto
+  accelerator: gpu
+  precision: bf16-mixed
+  limit_train_batches: 1.0
+  limit_val_batches: 1.0
+  devices: 1
+  gradient_clip_val: 1.0
+checkpoint:
+  monitor: val_loss
+  mode: min
+  save_top_k: 3
+  save_last: true
+  filename: '{epoch}-{val_loss:.4f}-{val_sisnr:.4f}'
+optim:
+  name: adam
+  lr: 0.01
+  # Legacy cosine setting is inactive; actual scheduler is ExponentialLR.
+  T_max: 64

@@ -1,0 +1,5 @@
+metric,n128,n64
+"Weights (Flash), KB",280,91
+"Activations (SRAM), KB",46,23
+ONNX graph nodes,43,43
+"Analyze wall-time, s",16,16

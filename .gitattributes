@@ -1,0 +1,7 @@
+* text=auto eol=lf
+*.ckpt binary
+*.onnx binary
+*.wav binary
+*.bin binary
+*.png binary
+results/compiler/*.txt -whitespace

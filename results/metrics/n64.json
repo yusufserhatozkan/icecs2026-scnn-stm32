@@ -1,0 +1,47 @@
+{
+  "n_utterances": 824,
+  "metrics": {
+    "noisy_sisnr": 8.443791274391199,
+    "noisy_pesq": 1.9708953583703457,
+    "noisy_stoi": 0.9210463402283164,
+    "enh_sisnr": 16.696729884779614,
+    "enh_pesq": 2.021787608711465,
+    "enh_stoi": 0.9215908460240723
+  },
+  "successful_counts": {
+    "noisy_sisnr": 824,
+    "noisy_pesq": 824,
+    "noisy_stoi": 824,
+    "enh_sisnr": 824,
+    "enh_pesq": 824,
+    "enh_stoi": 824
+  },
+  "protocol": {
+    "checkpoint": "models/n64.ckpt",
+    "hdf5": "data/voicebank/save/test.hdf5",
+    "sample_rate": 16000,
+    "input_dim": 16160,
+    "output_size": 16000,
+    "frame_samples": 80,
+    "stride_samples": 40,
+    "context_frames": 4,
+    "package_versions": {
+      "numpy": "1.26.4",
+      "torch": "2.1.0",
+      "pesq": "0.0.4",
+      "pystoi": "0.4.1",
+      "scipy": "1.17.1",
+      "h5py": "3.16.0"
+    },
+    "implementation": "chunked PyTorch streaming; four states reset per chunk",
+    "alignment": "discard context frames; reset membrane/readout/OLA after warmup",
+    "padding": "zero-pad initial context and final incomplete chunk; flush OLA tail",
+    "cropping": "concatenate enhanced chunks and crop to stored utterance length",
+    "normalization": "enhanced utterance peak only; clean/noisy unchanged",
+    "sisnr": "zero-mean projection; historical 1e-8 denominator epsilons",
+    "pesq_mode": "wb",
+    "stoi_extended": false,
+    "aggregation": "unweighted mean of finite per-utterance values; separate counts"
+  },
+  "source_sha256": "e7531ddc0b241fb0517e402b7fc2752ce240e366abb501a47bccb55ccf1a48b5"
+}

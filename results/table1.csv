@@ -1,0 +1,5 @@
+model,si_snr_db,pesq_wb,stoi
+Noisy input,8.44,1.971,0.921
+Reproduced SCNN N=256,18.08,2.264,0.925
+"SCNN N=128, ONNX streaming",17.42,2.149,0.923
+"SCNN N=64, ONNX streaming",16.70,2.022,0.922
