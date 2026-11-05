@@ -17,16 +17,16 @@ import os
 import re
 import csv
 import string
-import urllib
+import urllib.request
 import shutil
 import logging
-import tempfile
-import torchaudio
+from pathlib import Path, PureWindowsPath
+from zipfile import ZipFile
+
+import soundfile as sf
+import torch
 from torchaudio.transforms import Resample
 from .data_uitls import get_all_files
-from .data_uitls import read_wav_soundfile
-
-from pathlib import Path
 
 
 logger = logging.getLogger(__name__)
@@ -192,8 +192,8 @@ def create_csv(wav_lst, csv_file, clean_folder, txt_folder):
         clean_wav = os.path.join(clean_folder, snt_id + ".wav")
 
         # Reading the signal (to retrieve duration in seconds)
-        signal, _ = torchaudio.load(wav_file)  # read_wav_soundfile(wav_file)
-        duration = signal.shape[0] / SAMPLERATE
+        audio = sf.info(wav_file)
+        duration = audio.frames / audio.samplerate
 
         # Reading the transcript
         with open(os.path.join(txt_folder, snt_id + ".txt")) as f:
@@ -237,6 +237,28 @@ def check_voicebank_folders(*folders):
             )
 
 
+def _extract_voicebank_zip(archive_path, destination):
+    root = Path(destination).resolve()
+    with ZipFile(archive_path) as archive:
+        targets = []
+        for entry in archive.infolist():
+            path = PureWindowsPath(entry.filename)
+            if path.anchor or ".." in path.parts or path.is_reserved():
+                raise ValueError(f"Unsafe dataset ZIP entry: {entry.filename!r}")
+            target = root.joinpath(*path.parts).resolve()
+            if not target.is_relative_to(root):
+                raise ValueError(f"ZIP entry escapes the dataset directory: {entry.filename!r}")
+            targets.append((entry, target))
+
+        for entry, target in targets:
+            if entry.is_dir():
+                target.mkdir(parents=True, exist_ok=True)
+            else:
+                target.parent.mkdir(parents=True, exist_ok=True)
+                with archive.open(entry) as source, target.open("wb") as output:
+                    shutil.copyfileobj(source, output)
+
+
 def download_vctk(destination, device="cpu", downsample_rate=16000):
     """Download dataset and perform resample to 16000 Hz.
 
@@ -271,7 +293,8 @@ def download_vctk(destination, device="cpu", downsample_rate=16000):
         zip_files.append(filename)
         if not os.path.isfile(filename):
             print("Downloading " + url)
-            with urllib.request.urlopen(url) as response:
+            # The URLs above are fixed HTTPS endpoints at Edinburgh DataShare.
+            with urllib.request.urlopen(url, timeout=60) as response:  # nosec B310
                 with open(filename, "wb") as tmp_file:
                     print("... to " + tmp_file.name)
                     shutil.copyfileobj(response, tmp_file)
@@ -279,7 +302,7 @@ def download_vctk(destination, device="cpu", downsample_rate=16000):
     # Unzip
     for zip_file in zip_files:
         print("Unzipping " + zip_file)
-        shutil.unpack_archive(zip_file, final_dir, "zip")
+        _extract_voicebank_zip(zip_file, final_dir)
         os.remove(zip_file)
 
     # Downsample
@@ -303,17 +326,11 @@ def download_vctk(destination, device="cpu", downsample_rate=16000):
 
         # Load files and downsample
         for filename in get_all_files(dirname, match_and=[".wav"]):
-            signal, rate = torchaudio.load(filename)
-            # print(f"signal shape: {signal.shape}")
-            downsampled_signal = downsampler(signal.view(1, -1).to(device))
-
-            # Save downsampled file
-            torchaudio.save(
-                os.path.join(dirname_16k, filename[-12:]),
-                downsampled_signal.cpu(),
-                sample_rate=downsample_rate,
-                channels_first=True,
-            )
+            signal, _ = sf.read(filename, dtype="float32", always_2d=True)
+            signal = torch.from_numpy(signal.T.copy()).reshape(1, -1)
+            downsampled_signal = downsampler(signal.to(device))
+            sf.write(os.path.join(dirname_16k, filename[-12:]),
+                     downsampled_signal.cpu().numpy().T, downsample_rate, subtype="FLOAT")
 
             # Remove old file
             os.remove(filename)

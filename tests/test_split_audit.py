@@ -3,6 +3,7 @@ import copy
 import csv
 import json
 from pathlib import Path
+from zipfile import ZipFile
 
 import h5py
 import numpy as np
@@ -11,7 +12,7 @@ import soundfile as sf
 
 from dpsnn.data import split_audit as audit
 from dpsnn.data.hdf5_prepare import create_hdf5
-from dpsnn.data.voicebank_prepare import TRAIN_SPEAKERS
+from dpsnn.data.voicebank_prepare import TRAIN_SPEAKERS, _extract_voicebank_zip
 from tools.prepare_camera_ready_data import prepare_data
 
 
@@ -216,3 +217,25 @@ def test_complete_preparation_supports_float_wav_and_preserves_sources(tmp_path)
         prepare_data(tmp_path / "train", tmp_path / "test", output, repository_root=tmp_path,
                       expected_counts=counts)
     assert audit.sha256_file(report_path) == before
+
+
+@pytest.mark.parametrize("unsafe_name", ["../outside.txt", "/outside.txt", "C:/outside.txt"])
+def test_dataset_zip_rejects_unsafe_paths_before_writing(tmp_path, unsafe_name):
+    archive = tmp_path / "dataset.zip"
+    destination = tmp_path / "extracted"
+    with ZipFile(archive, "w") as dataset:
+        dataset.writestr("clean_testset_wav/fixture.wav", b"fixture")
+        dataset.writestr(unsafe_name, b"unsafe")
+    with pytest.raises(ValueError, match="Unsafe dataset ZIP entry"):
+        _extract_voicebank_zip(archive, destination)
+    assert not destination.exists()
+    assert not (tmp_path / "outside.txt").exists()
+
+
+def test_dataset_zip_extracts_nested_file(tmp_path):
+    archive = tmp_path / "dataset.zip"
+    with ZipFile(archive, "w") as dataset:
+        dataset.writestr("clean_testset_wav/fixture.wav", b"fixture")
+    destination = tmp_path / "extracted"
+    _extract_voicebank_zip(archive, destination)
+    assert (destination / "clean_testset_wav/fixture.wav").read_bytes() == b"fixture"

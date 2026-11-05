@@ -185,7 +185,7 @@ def verify_board_archive():
                 raise ValueError(f'{name}: compiler {label} changed')
         digest = re.search(r'model_hash\s*:\s*0x([a-f0-9]+)', report).group(1)
         graph = ROOT / f'models/dpsnn_{name}_streaming_xcubeai.onnx'
-        if hashlib.md5(graph.read_bytes()).hexdigest() != digest:
+        if hashlib.md5(graph.read_bytes(), usedforsecurity=False).hexdigest() != digest:
             raise ValueError(f'{name}: graph differs from compiler input')
 
 

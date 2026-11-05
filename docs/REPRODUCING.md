@@ -4,16 +4,19 @@ Run commands from the repository root. Write generated files to new directories 
 
 ## Environment
 
-The archived host environment used Python 3.11.5, PyTorch 2.1.0, torchvision 0.16.0, torchaudio 2.1.0 and NumPy 1.26.4. The GPU training environment used CUDA 11.8. The remaining direct package versions are pinned in `requirements.txt`.
+Use an up-to-date Python 3.11 environment. The current host tools use PyTorch 2.15.0, TorchAudio 2.11.1 and PyTorch Lightning 2.6.6. The direct dependencies are pinned in `requirements.txt`. On Windows, installing the PESQ package from source requires Microsoft C++ Build Tools. For UART capture, install `pyserial==3.5` separately.
 
-Install the matching PyTorch packages for your platform before installing this repository. A local compiler may be needed to install `pesq`. For UART tools, install `pyserial` separately.
+Install the PyTorch and TorchAudio builds for your platform before installing the full requirements. For example, on Windows or Linux for CPU verification:
 
 ```text
+python -m pip install --upgrade pip
+python -m pip install --index-url https://download.pytorch.org/whl/cpu torch==2.15.0 torchaudio==2.11.1
 python -m pip install -r requirements.txt
 python -m pip install --no-deps -e .
-python tools/verify_artifacts.py
 python tools/verify_artifacts.py --models
 ```
+
+For training, select a compatible GPU build from the [PyTorch installation guide](https://pytorch.org/get-started/locally/). The archived training environment used Python 3.11.5, PyTorch and TorchAudio 2.1.0, torchvision 0.16.0, NumPy 1.26.4 and CUDA 11.8. PyTorch 2.1.0 is recorded for provenance. Its checkpoint loader has known vulnerabilities. [PyTorch security advisory](https://github.com/pytorch/pytorch/security/advisories/GHSA-53q9-r3pm-6pq6)
 
 ## Dataset
 
@@ -23,7 +26,7 @@ Obtain the 28-speaker clean/noisy training archives and clean/noisy test archive
 python -m tools.prepare_camera_ready_data --train-root data/raw/train --test-root data/raw/test --output-root data/voicebank
 ```
 
-This prepares mono 16 kHz audio and separate train/validation/test caches, with 10,802/770/824 pairs. Validation speakers are p226 and p287; test speakers are p232 and p257. The command refuses an existing output directory and records file hashes in `data/voicebank/split_audit.json`.
+This resamples to mono 16 kHz, writes float32 WAVs, and builds separate train/validation/test caches, with 10,802/770/824 pairs. Validation speakers are p226 and p287; test speakers are p232 and p257. The command refuses an existing output directory and records file hashes in `data/voicebank/split_audit.json`.
 
 The archived test HDF5 SHA-256 is `c3507125db82884509a2820af1a0296c77c007e612b7bad24327900944ce6092`. Different library versions can affect resampling or file serialization; investigate a hash mismatch before comparing results.
 
@@ -67,6 +70,8 @@ With the ST tool installed:
 ```text
 stedgeai analyze --model models/dpsnn_n64_streaming_xcubeai.onnx --target stm32u5 --optimization balanced --compression none --name scnn_n64 --workspace data/st_workspace --output data/st_output
 ```
+
+The original measurement firmware and raw aiValidation captures are unavailable in this archive. Compiling a network from the saved ONNX file gives a C inference library. Repeating the board test also requires an STM32 application to feed the Flash-resident clip, manage state, record DWT cycles, and send the output over UART.
 
 The board is the B-U585I-IOT02A with STM32U585 at 160 MHz. The streaming graph consumes 80 audio samples and emits 40 enhanced samples per call. All four output states must be retained for the next call. The paper describes externally managed ping-pong state buffers.
 

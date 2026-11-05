@@ -125,7 +125,7 @@ def export_model(
         torch.onnx.export(
             wrapper, dummy_input, output,
             input_names=["noisy_audio"], output_names=["enhanced_audio"],
-            opset_version=opset_version,
+            opset_version=opset_version, dynamo=False,
         )
     size_kb = os.path.getsize(output_path) / 1024
     print(f"Raw ONNX exported  -> {output_path}  ({size_kb:.1f} KB)")
