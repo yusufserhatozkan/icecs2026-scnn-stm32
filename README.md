@@ -4,6 +4,20 @@ Code, models and results accompanying the IEEE ICECS 2026 paper by Yusuf Serhat 
 
 The paper deploys a time-domain spiking convolutional network on the STM32U585. A streaming ONNX graph exposes the temporal context, neuron states and overlap-add tail as recurrent inputs and outputs. Audio is processed at 16 kHz with an 80-sample window and a 40-sample hop.
 
+## Try the conference example
+
+Listen to the [noisy input](deploy/n64/test_noisy.wav), [STM32 output](deploy/n64/mcu_enhanced.wav), and [clean reference](deploy/n64/test_clean.wav) for utterance p232_009.
+
+From the repository root, run the file and results check with Python 3.11. For the CPU demo, install the three dependencies in a virtual environment and run the saved N=64 ONNX graph on the included audio.
+
+```text
+python tools/verify_artifacts.py
+python -m pip install numpy==1.26.4 onnxruntime==1.29.0 soundfile==0.14.0
+python tools/wav_to_c_array.py --noisy deploy/n64/test_noisy.wav --clean deploy/n64/test_clean.wav --onnx models/dpsnn_n64_streaming_xcubeai.onnx --out_c data/demo_n64/c --out_wav data/demo_n64/audio
+```
+
+The demo runs 1,662 frames and writes a listening WAV and a float32 reference under `data/demo_n64/audio`. It runs on the host CPU. For training, evaluation on the full test set, and STM32 compilation, see [Reproduction](docs/REPRODUCING.md).
+
 ## Results reported in the paper
 
 | Model | SI-SNR (dB) | PESQ | STOI |
@@ -43,19 +57,6 @@ This repository accompanies the conference paper with model checkpoints, ONNX ex
 - `licenses/`: license texts for the upstream components identified in the third-party notices.
 - `tests/`: software checks for data splits, checkpoint selection and export.
 
-## Use
-
-Use Python 3.11 and PyTorch 2.1.0. Install the matching PyTorch, torchvision and torchaudio packages for your platform, then:
-
-```text
-python -m pip install -r requirements.txt
-python -m pip install --no-deps -e .
-python tools/verify_artifacts.py
-python tools/verify_artifacts.py --models
-```
-
-See [reproduction instructions](docs/REPRODUCING.md) for dataset preparation, training, evaluation and ONNX export. The dataset and STM32 toolchain must be obtained separately.
-
 ## Citation
 
 ```bibtex
@@ -67,4 +68,6 @@ See [reproduction instructions](docs/REPRODUCING.md) for dataset preparation, tr
 }
 ```
 
-This work builds on [DPSNN](https://github.com/tao-sun/dpsnn) by Tao Sun and Sander Bohté. Attribution and component terms are listed in [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md). The [MIT license](LICENSE) covers the original contributions to this repository. Third-party terms include a noncommercial license for the augmentation helper; the referenced DPSNN revision supplies no standalone license.
+## License
+
+The [MIT license](LICENSE) covers original contributions. The inherited code and N=256 reference checkpoint come from [DPSNN](https://github.com/tao-sun/dpsnn) by Tao Sun and Sander Bohté. That revision has no published license for those materials. See [third-party notices](THIRD_PARTY_NOTICES.md) for the rights and terms that apply to individual components.

@@ -16,6 +16,7 @@ import wave
 
 import h5py
 import numpy as np
+import soundfile as sf
 import torch
 import torchaudio
 from torchaudio.transforms import Resample
@@ -171,23 +172,21 @@ def prepare_data(train_root, test_root, output_root, historical_cache_root=None,
                 source = repo_path(record["source"][kind]["path"], repository_root)
                 if sha256_file(source) != record["source"][kind]["sha256"]:
                     raise SplitAuditError(f"Source content changed after audit: {source}")
-                signal, sample_rate = torchaudio.load(str(source))
-                if sample_rate != 48000 or signal.shape != (1, record["source"][kind]["frames"]):
+                signal, sample_rate = sf.read(source, dtype="float32", always_2d=True)
+                if sample_rate != 48000 or signal.shape != (record["source"][kind]["frames"], 1):
                     raise SplitAuditError(f"Source audio changed after audit: {source}")
-                signal = resampler(signal)
+                signal = resampler(torch.from_numpy(signal.T))
                 if not torch.isfinite(signal).all():
                     raise SplitAuditError(f"Nonfinite resampled waveform: {record['id']}/{kind}")
                 destination = audio_root / f"{kind}_{suffix}" / f"{record['id']}.wav"
-                if destination.exists():
-                    raise FileExistsError(destination)
-                # Preserve the existing preparation helper's default WAV encoding.
-                torchaudio.save(str(destination), signal, sample_rate=16000)
-                audio_info = torchaudio.info(str(destination))
-                info = {"sample_rate": audio_info.sample_rate, "channels": audio_info.num_channels,
-                        "frames": audio_info.num_frames, "bits_per_sample": audio_info.bits_per_sample,
-                        "encoding": audio_info.encoding}
-                if info["sample_rate"] != 16000 or info["channels"] != 1:
+                # The archived preparation stored IEEE float32 WAV without quantization.
+                with destination.open("xb") as stream:
+                    sf.write(stream, signal.numpy().T, 16000, format="WAV", subtype="FLOAT")
+                audio_info = sf.info(destination)
+                if (audio_info.samplerate, audio_info.channels, audio_info.subtype) != (16000, 1, "FLOAT"):
                     raise SplitAuditError(f"Unexpected resampled WAV properties: {destination}")
+                info = {"sample_rate": audio_info.samplerate, "channels": audio_info.channels,
+                        "frames": audio_info.frames, "bits_per_sample": 32, "encoding": "PCM_F"}
                 resampled[kind] = {**file_record(destination, repository_root), **info}
             if resampled["clean"]["frames"] != resampled["noisy"]["frames"]:
                 raise SplitAuditError(f"Resampled pair length mismatch: {record['id']}")
@@ -223,7 +222,7 @@ def prepare_data(train_root, test_root, output_root, historical_cache_root=None,
                               "rolloff": resampler.rolloff,
                               "resampling_method": resampler.resampling_method,
                               "beta": resampler.beta, "torch_threads": torch.get_num_threads(),
-                              "wav_save_encoding": "torchaudio.save default"},
+                              "wav_save_encoding": "SoundFile WAV FLOAT (IEEE float32)"},
               "raw_inventory": inventory, "splits": splits, "overlap_checks": overlap_checks,
               "historical_files": historical, "historical_tensor_comparison": comparisons}
     report_path = output_root / "split_audit.json"

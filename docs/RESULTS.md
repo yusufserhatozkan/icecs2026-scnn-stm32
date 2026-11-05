@@ -2,7 +2,7 @@
 
 ## Scope
 
-This release accompanies the submitted four-page ICECS 2026 paper, *Spiking Neural Network on Microcontroller for Low-cost Speech Enhancement*. Its SHA-256 is `4c41cb819df0c48c7ae747261e59546332a8322a632d1b865f25d46389f4c929`.
+This release accompanies the submitted four-page ICECS 2026 paper, *Spiking Neural Network on Microcontroller for Low-cost Speech Enhancement*. The submitted IEEE PDF eXpress copy has SHA-256 `aff0fedc863d200feada05601df1f5dfc1a19c2a028775e469556f9e528673b2`.
 
 `results/table1.csv`, `results/table2.csv` and `results/deployment.csv` transcribe the paper's numerical values and model identities, with shortened labels.
 

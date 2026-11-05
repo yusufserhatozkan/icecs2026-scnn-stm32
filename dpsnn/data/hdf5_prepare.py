@@ -1,24 +1,15 @@
 from tqdm import tqdm
 import h5py
 import csv
-import librosa
-import torchaudio
-import numpy as np
+import soundfile as sf
 import torch
-import scipy
 
 
 def load(path, mono=True, mode="numpy", offset=0.0, duration=None):
-    y, curr_sr = torchaudio.load(path) # librosa.load(path, sr=None, mono=mono, res_type='kaiser_fast', offset=offset, duration=duration)
-    # print(f"y orig shape: {y.shape}")
-
-    if len(y.shape) == 1:
-        # Expand channel dimension
-        y = y[np.newaxis, :]
-
-    if mode == "numpy":
-        y = y.numpy()
-        # print(f"y shape: {y.shape}")
+    y, curr_sr = sf.read(path, dtype="float32", always_2d=True)
+    y = y.T
+    if mode != "numpy":
+        y = torch.from_numpy(y)
 
     return y, curr_sr
 

@@ -32,12 +32,6 @@ These references identify matching historical source. They do not establish the 
 
 These components were adapted through DPSNN for its data preparation. They are not unmodified copies of the complete upstream files. SpeechBrain's [Apache License 2.0](licenses/speechbrain-Apache-2.0.txt) is included. The bracketed fields in that license's standard appendix are part of the upstream license text, not unfinished project documentation.
 
-## Denoiser augmentation
-
-`dpsnn/data/augment.py` retains the Facebook, Inc. copyright notice and Alexandre Défossez's `adefossez` author credit. Its batch-remixing functions were adapted through DPSNN from [Denoiser's augmentation code](https://github.com/facebookresearch/denoiser/blob/8afd7c166699bb3c8b2d95b6dd706f71e1075df0/denoiser/augment.py). The local functions accept clean/noisy tensors instead of Denoiser's stacked sources and include a separate `remix_split` function.
-
-Denoiser's [Creative Commons Attribution-NonCommercial 4.0 license](licenses/denoiser-CC-BY-NC-4.0.txt) accompanies the inherited augmentation code. This is separate from the MIT exception for its speech-quality metrics below. The root MIT license does not replace these component terms. Augmentation is disabled by the conference training protocol.
-
 ## Speech-quality metrics
 
 `dpsnn/data/metrics.py` derives from the `matlab_eval.py` evaluation code described in [facebookresearch/denoiser](https://github.com/facebookresearch/denoiser#license), adapted from [santi-pdp/segan_pytorch](https://github.com/santi-pdp/segan_pytorch). Denoiser identifies that component as MIT-licensed; its general repository license is different. The local version adapts the metric interface. The component's MIT notice is retained below. The PESQ and STOI packages retain their own terms.

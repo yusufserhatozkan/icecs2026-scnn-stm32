@@ -29,7 +29,7 @@ def export_synthetic(wrapper, model, path):
     with path.open("xb") as output:
         torch.onnx.export(wrapper, (torch.zeros(1, model.L), *initial_states(model)), output,
                           input_names=list(streaming.STREAMING_INPUT_NAMES),
-                          output_names=list(streaming.STREAMING_OUTPUT_NAMES), opset_version=13)
+                          output_names=list(streaming.STREAMING_OUTPUT_NAMES), opset_version=13, dynamo=False)
     onnx.checker.check_model(onnx.load(path))
 
 

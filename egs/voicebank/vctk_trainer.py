@@ -6,8 +6,6 @@ from omegaconf import OmegaConf
 
 import torch
 from torch.utils.data import DataLoader
-from torch.utils.data import default_collate
-import torchaudio
 
 import numpy as np
 
@@ -19,7 +17,6 @@ from pytorch_lightning.loggers import CSVLogger
 
 from dpsnn.data.wave_dataset2 import worker_init_fn
 from dpsnn.data.wave_dataset2 import ContextSepDataset, EvaluationDataset
-from dpsnn.data.augment import remix
 from dpsnn.data.hdf5_prepare import create_hdf5
 from dpsnn.data.voicebank_prepare import prepare_voicebank, download_vctk
 from dpsnn.layers.sdr import singlesrc_neg_sisdr
@@ -159,7 +156,6 @@ def start_func():
     start_context_dur = args.X * config.context_dur
 
     if args.test_ckpt_path is None:
-        random_hops = False if args.augment else args.random_hops
         train_dataset = ContextSepDataset(
             hdf_file=config.hdf5_train,
             frame_dur=config.frame_dur,
@@ -167,21 +163,11 @@ def start_func():
             channels=1,
             start_context_dur=start_context_dur,
             end_context_dur=config.delay_dur,
-            random_hops=random_hops)
-        def remix_collate(batch):
-            inputs, targets = default_collate(batch)
-            noisy, clean = inputs[1], targets[1]
-            noisy_perm, clean = remix(noisy-clean, clean)
-            inputs[1] = noisy_perm
-            return inputs, targets
-
-        collate_fn = remix_collate if args.augment else default_collate
-        shuffle = False if args.augment else True
+            random_hops=args.random_hops)
         train_dataloader = DataLoader(train_dataset,
                                 batch_size=config.batch_size,
-                                shuffle=shuffle,
+                                shuffle=True,
                                 num_workers=0,  # 0 required on Windows — h5py can't be pickled
-                                collate_fn=collate_fn,
                                 worker_init_fn=worker_init_fn)
 
 

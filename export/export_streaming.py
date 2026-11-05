@@ -245,7 +245,7 @@ def export_streaming(
         torch.onnx.export(
             wrapper, (dummy_frame, dummy_ctx, dummy_v, dummy_mem, dummy_tail), output,
             input_names=list(STREAMING_INPUT_NAMES), output_names=list(STREAMING_OUTPUT_NAMES),
-            opset_version=13,
+            opset_version=13, dynamo=False,
         )
     size_kb = os.path.getsize(output_raw) / 1024
     print(f"Raw streaming ONNX: {size_kb:.1f} KB")
